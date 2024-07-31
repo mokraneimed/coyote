@@ -38,7 +38,7 @@ These are `mm.16.blocked` from Section 6.4 of the paper, and the Schedule Cost o
 ```
 python3 coyote_benchmarks.py
 ```
-the results will be in ``benchmarks_evaluation.py`` file.
+the results will be in ``benchmarks_evaluation.csv`` file.
 
 ### Demo
 Lets start by building all the `small` benchmarks (all replication sorts for `conv.4.2`, `mm.2`, `dot.3`, `dot.6`, and `dot.10`, as well as the ungrouped `sort[3]`):
