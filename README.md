@@ -24,13 +24,6 @@ To build and run the Docker image, run the following commands from the directory
 docker build -t coyote .
 docker run -it coyote bash
 ```
-## For CHEHAB benchmarks run:
-```
-python3 coyote_benchmarks.py
-```
-the results will be in ``benchmarks_evaluation.py`` file.
-
-
 In addition to the compiler and the runtime, the image also conists of various scripts to automatically run the benchmarks from the paper and generate the associated figures.
 These are:
 * `compile_benchmarks.py`: Automatically invokes the build script on a set of circuits defined in `benchmarks.py`. There are several presets available, `small`, `medium`, and `large`, representing the size of the circuits (and correspondingly the expected compile time).
@@ -40,6 +33,12 @@ These are:
 
 Note that there are two experiments omitted from the artifact, as they require some manual effort to set up and run. 
 These are `mm.16.blocked` from Section 6.4 of the paper, and the Schedule Cost over Time graph from Section 6.8 of the paper.
+
+## For CHEHAB benchmarks run:
+```
+python3 coyote_benchmarks.py
+```
+the results will be in ``benchmarks_evaluation.py`` file.
 
 ### Demo
 Lets start by building all the `small` benchmarks (all replication sorts for `conv.4.2`, `mm.2`, `dot.3`, `dot.6`, and `dot.10`, as well as the ungrouped `sort[3]`):
