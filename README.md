@@ -23,14 +23,11 @@ To build and run the Docker image, run the following commands from the directory
 ```
 docker build -t coyote .
 docker run -it coyote bash
-``
-
+```
 ## For CHEHAB benchmarks run:
-
 ```
 python3 coyote_benchmarks.py
-`` 
-
+```
 the results will be in ``benchmarks_evaluation.py`` file.
 
 
