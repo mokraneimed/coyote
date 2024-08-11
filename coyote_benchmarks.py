@@ -4,6 +4,7 @@ import time
 import csv
 import subprocess
 from evaluate import *
+import numpy as np
 
 def shift_down(image):
     return [[Var('0')] * 4] + image[:-1]
@@ -21,6 +22,26 @@ def matrix_addition(matrix1, matrix2):
     return [[matrix1[i][j] + (matrix2[i][j]) for j in range(4)] for i in range(4)]
 
 coyote = coyote_compiler()
+
+@coyote.define_circuit(image = matrix(4,4))
+def gx_kernel(image):
+    height, width = 4,4
+    result = np.zeros_like(image)
+    padded_image = np.pad(image, pad_width=1, mode='constant', constant_values=Var('0'))
+
+    for i in range(1, height + 1):
+        for j in range(1, width + 1):
+            top_row = padded_image[i-1, j-1:j+2]
+            curr_row = padded_image[i, j-1:j+2]
+            bottom_row = padded_image[i+1, j-1:j+2]
+            
+            top_sum = top_row[0] +   top_row[2]
+            curr_sum = Var('2')*curr_row[0] + Var('2') * curr_row[2]
+            bottom_sum = bottom_row[0] + bottom_row[2]
+
+            result[i-1, j-1] = top_sum + curr_sum + bottom_sum
+
+    return [result[i][j] for i in range(4) for j in range(4)]
 
 @coyote.define_circuit(a=matrix(3, 3), b=matrix(3, 3))
 def matmul_3x3_un(a, b):
@@ -51,7 +72,7 @@ def box_blur(image):
 
     return [result[i][j] for i in range(4) for j in range(4)]
 
-with open('benchmarks_evaluation.csv', mode='w', newline='') as csvfile:
+with open('benchmarks_evaluation.csv', mode='a', newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
     # Write the header
     csvwriter.writerow(['Benchmark name', 'Compile time',
@@ -64,40 +85,43 @@ with open('benchmarks_evaluation.csv', mode='w', newline='') as csvfile:
                         'Multiplicative depth'
                         ])
 
+directory_path = 'bfv_backend/coyote_out'
 for func in coyote.func_signatures:
     print(func.__name__)
     benchmark_name = func.__name__
+    benchmark_dir = os.path.join(directory_path, benchmark_name)
 
-    start_time = time.time()
-    scalar_code = coyote.instantiate(benchmark_name)
-    vector_code = list(map(str, coyote.vectorize()))
+    if not os.path.exists(benchmark_dir):
+        start_time = time.time()
+        scalar_code = coyote.instantiate(benchmark_name)
+        vector_code = list(map(str, coyote.vectorize()))
 
-    end_time = time.time()
-    compilation_time = end_time - start_time
-    print(f'Compilation time: {compilation_time:.2f} seconds')
-    try:
-        os.mkdir('outputs')
-    except FileExistsError:
-        pass
+        end_time = time.time()
+        compilation_time = end_time - start_time
+        print(f'Compilation time: {compilation_time:.2f} seconds')
+        try:
+            os.mkdir('outputs')
+        except FileExistsError:
+            pass
 
-    try:
-        os.mkdir(f'outputs/{benchmark_name}')
-    except FileExistsError:
-        pass
+        try:
+            os.mkdir(f'outputs/{benchmark_name}')
+        except FileExistsError:
+            pass
 
-    open(f'outputs/{benchmark_name}/scal', 'w').write('\n'.join(scalar_code))
-    open(f'outputs/{benchmark_name}/vec', 'w').write('\n'.join(vector_code))
-    print(f'Successfully compiled benchmark {benchmark_name}; outputs placed in outputs/{benchmark_name}!')
+        open(f'outputs/{benchmark_name}/scal', 'w').write('\n'.join(scalar_code))
+        open(f'outputs/{benchmark_name}/vec', 'w').write('\n'.join(vector_code))
+        print(f'Successfully compiled benchmark {benchmark_name}; outputs placed in outputs/{benchmark_name}!')
 
-    subprocess.run(['python3', 'compile_to_bfv.py', benchmark_name])
-    
-    num_multiplications, num_additions, num_substitutions, num_rotations, num_plain_multiplications, max_depth, max_multiplicative_depth = evaluate(benchmark_name)
-    with open('benchmarks_evaluation.csv', mode='a', newline='') as csvfile:
-        csvwriter = csv.writer(csvfile)
-        csvwriter.writerow([benchmark_name, compilation_time,
-                        num_multiplications, num_additions, num_substitutions, 
-                        num_rotations, num_plain_multiplications, 
-                        max_depth, max_multiplicative_depth])
+        subprocess.run(['python3', 'compile_to_bfv.py', benchmark_name])
+        
+        num_multiplications, num_additions, num_substitutions, num_rotations, num_plain_multiplications, max_depth, max_multiplicative_depth = evaluate(benchmark_name)
+        with open('benchmarks_evaluation.csv', mode='a', newline='') as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csvwriter.writerow([benchmark_name, compilation_time,
+                            num_multiplications, num_additions, num_substitutions, 
+                            num_rotations, num_plain_multiplications, 
+                            max_depth, max_multiplicative_depth])
 
 subprocess.run(['python3', 'build_and_run_all.py', '--iters=1', '--runs=1'])
 
