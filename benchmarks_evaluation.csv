@@ -1,0 +1,11 @@
+Benchmark name,Compile time,multiplications,additions,substitutions,rotations,scalar/plain multiplications,Depth,Multiplicative depth,Run time
+l2_distance_4,104.13130640983582,1,4,2,2,4,6,1,,,,,,,85
+Benchmark name,Compile time,multiplications,additions,substitutions,rotations,scalar/plain multiplications,Depth,Multiplicative depth,,,,,,,
+l2_distance_8,194.10453081130981,2,13,3,6,21,8,1,,,,,,,206
+Benchmark name,Compile time,multiplications,additions,substitutions,rotations,scalar/plain multiplications,Depth,Multiplicative depth,,,,,,,
+Benchmark name,Compile time,multiplications,additions,substitutions,rotations,scalar/plain multiplications,Depth,Multiplicative depth,,,,,,
+Benchmark name,Compile time,multiplications,additions,substitutions,rotations,scalar/plain multiplications,Depth,Multiplicative depth,,,,,
+Benchmark name,Compile time,multiplications,additions,substitutions,rotations,scalar/plain multiplications,Depth,Multiplicative depth,,,,
+Benchmark name,Compile time,multiplications,additions,substitutions,rotations,scalar/plain multiplications,Depth,Multiplicative depth,,,
+Benchmark name,Compile time,multiplications,additions,substitutions,rotations,scalar/plain multiplications,Depth,Multiplicative depth,,
+Benchmark name,Compile time,multiplications,additions,substitutions,rotations,scalar/plain multiplications,Depth,Multiplicative depth,

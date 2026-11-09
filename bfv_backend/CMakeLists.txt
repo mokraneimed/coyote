@@ -74,6 +74,6 @@ add_executable(${BENCHMARK} main.cpp util.cpp
 target_include_directories(${BENCHMARK} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 set_target_properties(${BENCHMARK} PROPERTIES COMPILE_FLAGS "-DBENCHMARK_NAME=${BENCHMARK} -DRUNS=${RUNS} -DITERATIONS=${ITERATIONS}")
 message("Compile flags: -DBENCHMARK_NAME=${BENCHMARK} -DRUNS=${RUNS} -DITERATIONS=${ITERATIONS}")
-find_package(SEAL 3.7 REQUIRED)
+find_package(SEAL 4.0 REQUIRED)
 target_link_libraries(${BENCHMARK} SEAL::seal)
 endforeach(BENCHMARK)

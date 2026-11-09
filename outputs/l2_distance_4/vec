@@ -1,0 +1,13 @@
+__t0 = [l2_distance_4(a):1, l2_distance_4(a):0, l2_distance_4(a):3, l2_distance_4(a):2]
+__v0 = load(__t0)
+__t1 = [l2_distance_4(b):1, l2_distance_4(b):0, l2_distance_4(b):3, l2_distance_4(b):2]
+__v1 = load(__t1)
+__v2 = __v0 - __v1
+__v3 = __v0 - __v1
+__t2 = blend(__v2@1001, __v3@0110)
+__t3 = blend(__v3@1001, __v2@0110)
+__v4 = __t2 * __t3
+__s0 = __v4 >> 1
+__v5 = __v4 + __s0
+__s1 = __v5 >> 2
+__v6 = __s1 + __v5

@@ -23,54 +23,58 @@ def matrix_addition(matrix1, matrix2):
 
 coyote = coyote_compiler()
 
-@coyote.define_circuit(image = matrix(4,4))
-def gx_kernel(image):
-    height, width = 4,4
-    result = np.zeros_like(image)
-    padded_image = np.pad(image, pad_width=1, mode='constant', constant_values=Var('0'))
+# @coyote.define_circuit(image = matrix(4,4))
+# def gx_kernel(image):
+#     height, width = 4,4
+#     result = np.zeros_like(image)
+#     padded_image = np.pad(image, pad_width=1, mode='constant', constant_values=Var('0'))
 
-    for i in range(1, height + 1):
-        for j in range(1, width + 1):
-            top_row = padded_image[i-1, j-1:j+2]
-            curr_row = padded_image[i, j-1:j+2]
-            bottom_row = padded_image[i+1, j-1:j+2]
+#     for i in range(1, height + 1):
+#         for j in range(1, width + 1):
+#             top_row = padded_image[i-1, j-1:j+2]
+#             curr_row = padded_image[i, j-1:j+2]
+#             bottom_row = padded_image[i+1, j-1:j+2]
             
-            top_sum = top_row[0] +   top_row[2]
-            curr_sum = Var('2')*curr_row[0] + Var('2') * curr_row[2]
-            bottom_sum = bottom_row[0] + bottom_row[2]
+#             top_sum = top_row[0] +   top_row[2]
+#             curr_sum = Var('2')*curr_row[0] + Var('2') * curr_row[2]
+#             bottom_sum = bottom_row[0] + bottom_row[2]
 
-            result[i-1, j-1] = top_sum + curr_sum + bottom_sum
+#             result[i-1, j-1] = top_sum + curr_sum + bottom_sum
 
-    return [result[i][j] for i in range(4) for j in range(4)]
+#     return [result[i][j] for i in range(4) for j in range(4)]
 
-@coyote.define_circuit(a=matrix(3, 3), b=matrix(3, 3))
-def matmul_3x3_un(a, b):
-    return [recursive_sum([a[i][k] * b[k][j] for k in range(len(a))]) for i in range(len(a)) for j in range(len(a))]
+# @coyote.define_circuit(a=matrix(3, 3), b=matrix(3, 3))
+# def matmul_3x3_un(a, b):
+#     return [recursive_sum([a[i][k] * b[k][j] for k in range(len(a))]) for i in range(len(a)) for j in range(len(a))]
 
 @coyote.define_circuit(a=vector(4), b=vector(4))
 def l2_distance_4(a, b):
     return recursive_sum([(x - y) * (x - y) for x, y in zip(a, b)])
 
-@coyote.define_circuit(c0=vector(1), c1=vector(1), c2=vector(1), c3=vector(1), c4=vector(1))
-def poly_reg(c0, c1, c2, c3, c4):
-    return [c1[i] - (c0[i] * c0[i] * c4[i] + c0[i] * c3[i] + c2[i]) for i in range(1)]
+@coyote.define_circuit(a=vector(8), b=vector(8))
+def l2_distance_8(a, b):
+    return recursive_sum([(x - y) * (x - y) for x, y in zip(a, b)])
 
-@coyote.define_circuit(c0=vector(1), c1=vector(1), c2=vector(1), c3=vector(1))
-def linear_reg(c0, c1, c2, c3):
-    return [c1[i] - (c2[i] * c0[i]) - c3[i] for i in range(1)]
+# @coyote.define_circuit(c0=vector(1), c1=vector(1), c2=vector(1), c3=vector(1), c4=vector(1))
+# def poly_reg(c0, c1, c2, c3, c4):
+#     return [c1[i] - (c0[i] * c0[i] * c4[i] + c0[i] * c3[i] + c2[i]) for i in range(1)]
 
-@coyote.define_circuit(image = matrix(4,4))
-def box_blur(image):
-    top_row = shift_up(image)
-    bottom_row = shift_down(image)
+# @coyote.define_circuit(c0=vector(1), c1=vector(1), c2=vector(1), c3=vector(1))
+# def linear_reg(c0, c1, c2, c3):
+#     return [c1[i] - (c2[i] * c0[i]) - c3[i] for i in range(1)]
 
-    top_sum = matrix_addition(matrix_addition(shift_left(top_row), top_row), shift_right(top_row))
-    curr_sum = matrix_addition(matrix_addition(shift_left(image), image), shift_right(image))
-    bottom_sum = matrix_addition(matrix_addition(shift_left(bottom_row), bottom_row), shift_right(bottom_row))
+# @coyote.define_circuit(image = matrix(4,4))
+# def box_blur(image):
+#     top_row = shift_up(image)
+#     bottom_row = shift_down(image)
 
-    result = matrix_addition(matrix_addition(top_sum, curr_sum), bottom_sum)
+#     top_sum = matrix_addition(matrix_addition(shift_left(top_row), top_row), shift_right(top_row))
+#     curr_sum = matrix_addition(matrix_addition(shift_left(image), image), shift_right(image))
+#     bottom_sum = matrix_addition(matrix_addition(shift_left(bottom_row), bottom_row), shift_right(bottom_row))
 
-    return [result[i][j] for i in range(4) for j in range(4)]
+#     result = matrix_addition(matrix_addition(top_sum, curr_sum), bottom_sum)
+
+#     return [result[i][j] for i in range(4) for j in range(4)]
 
 with open('benchmarks_evaluation.csv', mode='a', newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
